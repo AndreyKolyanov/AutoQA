@@ -1,6 +1,7 @@
 package ru.andrewkolyanov.sbt;
 
 import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
 import ru.andrewkolyanov.sbt.pages.Page;
 
 import java.util.List;
@@ -34,7 +35,7 @@ public class SiteNavigationSteps {
         page = page.selectCheckbox(filterTitle, checkboxLabel);
     }
 
-    @Given("^Проверить что количество элементов равно (.*)$")
+    @Then("^Проверить что количество элементов равно (.*)$")
     public void checkElementsCount(int expectedCount) {
         searchResult = page.findElements();
         assertEquals("Количество элементов не равно ожидаемому", expectedCount, searchResult.size());
@@ -50,7 +51,7 @@ public class SiteNavigationSteps {
         page = page.find(firstSearchElementTitle);
     }
 
-    @Given("^Сопоставить запомненное значение с найденным$")
+    @Then("^Сопоставить запомненное значение с найденным$")
     public void matchValueWithFound() {
         assertTrue(page.getFindElementTitle().contains(firstSearchElementTitle));
     }

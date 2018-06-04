@@ -11,6 +11,7 @@ import ru.andrewkolyanov.sbt.Driver;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class Page {
 
