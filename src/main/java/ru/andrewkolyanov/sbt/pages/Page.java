@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.andrewkolyanov.sbt.Driver;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Page {
@@ -16,7 +17,6 @@ public class Page {
     private static final Logger LOG = LoggerFactory.getLogger(Page.class);
 
     private WebDriver driver;
-    private String rememberElementTitle;
 
     public Page(String url) {
         this.driver = Driver.getCurrentDriver();
@@ -37,7 +37,7 @@ public class Page {
         return this;
     }
 
-    public Page typeValueToField(String filterTitle, String fieldTitle, String value) {
+    public Page typeValueToFilterField(String filterTitle, String fieldTitle, String value) {
         String locator = "//span[@sign-title='%s']//input";
         WebElement filter = findFilterByName(filterTitle);
         WebElement input = filter.findElement(By.xpath(String.format(locator, fieldTitle)));
@@ -52,27 +52,25 @@ public class Page {
         return this;
     }
 
-    public int countSearchElements() {
-        return driver.findElements(By.cssSelector(".n-snippet-list > div.n-snippet-card2")).size();
+    public List<String> findElements() {
+        List<String> result = new ArrayList<String>();
+        List<WebElement> elements = driver.findElements(By.cssSelector(".n-snippet-list > div.n-snippet-card2"));
+        for (WebElement element: elements) {
+            result.add(element.findElement(By.cssSelector(".n-snippet-card2__title a")).getText());
+        }
+        return result;
     }
 
-    public void rememberElement() {
-        rememberElementTitle = driver.findElement(By.cssSelector(".n-snippet-list:first-child .n-snippet-card2__title a")).getText();
-    }
-
-    public Page findRememberElement() {
-        WebElement search = driver.findElement(By.cssSelector("#header-search"));
-        search.sendKeys(getRememberElementTitle());
-        driver.findElement(By.xpath("//span[text()='Найти']/..")).click();
+    public Page find(String text) {
+        WebElement searchField = driver.findElement(By.cssSelector("#header-search"));
+        WebElement searchButton = driver.findElement(By.xpath("//span[text()='Найти']/.."));
+        searchField.sendKeys(text);
+        searchButton.click();
         return this;
     }
 
     public String getFindElementTitle() {
         return driver.findElement(By.cssSelector("h1.title")).getText();
-    }
-
-    public String getRememberElementTitle() {
-        return rememberElementTitle;
     }
 
     private WebElement findFilterByName(String name) {

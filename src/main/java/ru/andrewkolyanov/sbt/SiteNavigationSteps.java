@@ -3,13 +3,16 @@ package ru.andrewkolyanov.sbt;
 import cucumber.api.java.en.Given;
 import ru.andrewkolyanov.sbt.pages.Page;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class SiteNavigationSteps {
 
     private Page page;
+    private List<String> searchResult;
+    private String firstSearchElementTitle;
 
     @Given("^Перейти на сайт '(.*)'$")
     public void openSite(String url) {
@@ -23,7 +26,7 @@ public class SiteNavigationSteps {
 
     @Given("^В параметре '(.*)' ввести в поле '(.*)' значение '(.*)'$")
     public void typeValueToField(String filterTitle, String fieldTitle, String value) {
-        page = page.typeValueToField(filterTitle, fieldTitle, value);
+        page = page.typeValueToFilterField(filterTitle, fieldTitle, value);
     }
 
     @Given("^В параметре '(.*)' выбрать значение '(.*)'$")
@@ -33,21 +36,22 @@ public class SiteNavigationSteps {
 
     @Given("^Проверить что количество элементов равно (.*)$")
     public void checkElementsCount(int expectedCount) {
-        assertEquals("Количество элементов не равно ожидаемому", expectedCount, page.countSearchElements());
+        searchResult = page.findElements();
+        assertEquals("Количество элементов не равно ожидаемому", expectedCount, searchResult.size());
     }
 
     @Given("^Запомнить первый элемент$")
     public void rememberFirstElement() {
-        page.rememberElement();
+        firstSearchElementTitle = searchResult.get(0);
     }
 
     @Given("^Найти запомненное значение$")
     public void findRememberValue() {
-        page = page.findRememberElement();
+        page = page.find(firstSearchElementTitle);
     }
 
     @Given("^Сопоставить запомненное значение с найденным$")
     public void matchValueWithFound() {
-        assertFalse("Наименование элементов не совпадает", page.getFindElementTitle().equals(page.getRememberElementTitle()));
+        assertTrue(page.getFindElementTitle().contains(firstSearchElementTitle));
     }
 }
